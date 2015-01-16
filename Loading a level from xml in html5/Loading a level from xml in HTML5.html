@@ -1,0 +1,240 @@
+﻿<!DOCTYPE HTML>
+<html lang="en">
+<meta charset="utf-8"> 
+    <head>
+        <title>Loading a level from xml in HTML5</title>
+         <link rel="stylesheet" type="text/css" href="css files/LearningResource.css">
+    </head>
+
+    <body>
+        <h2>Loading a level from xml in HTML5</h2>
+
+        <h1>Overview</h1>
+        <p>Welcome to my learning resource for loading a level from xml in HTML5.</p>
+        	<p>This is a very useful idea as it means you no longer have to hand place every single object in your HTML5 game.</p>
+        	<p>You can just write an xml file or inline xml strings that contain the positions of the objects/sprites you want to place and load it.</p>
+        	<p>You then give objects the positions from the xml file/strings when you create them and there you go, instant level!</p>
+        	<p>I will guide you through writing simple xml strings and also an xml file which will be used to position a few platforms for a simple platformer game</p>
+        	<p>I will also guide you through loading the file and using it to position the objects</p>
+
+        	<H4> The steps</H4>
+        	<ul>
+    			<li>Step 1.) Create an XML file/string
+    			<li>Step 2.) Loading an XML file
+    			<li>Step 3.) Positioning objects with the XML file
+			</ul>
+
+
+
+        <h1>The XML string</h1>
+    		<p>
+    		<textarea readonly id="xml part 1" name="xmlPart1">txt = "<level1>";
+
+txt = txt + "<Platform>"
+txt = txt + "<x>80</x>";
+txt = txt + "<y>315</y>";
+txt = txt + "</Platform>"
+txt = txt + "</level1>";</textarea>
+    		</p>
+    		<p>First we create an xml string.</p>
+    		<p>We then open a 'Platform' tag where we define and x and y position for the platform.</p>
+    		<p>We then add an 'x' tag with the value '80' which will be the platforms 'x' coordinate.</p>
+    		<p>We do the same for the 'y' coordinate, remembering to close the tag.</p>
+    		<p>We then close the 'Platform' tag.</p>
+            <p>This will be inside a function, like so:</p>
+            <p>
+            <textarea readonly id="xml part 2" name="loadingXmlPart2">function loadLevel() {
+txt = "<level1>";
+txt = txt + "<Platform>"
+txt = txt + "<x>80</x>";
+txt = txt + "<y>315</y>";
+txt = txt + "</Platform>"
+
+txt = txt + "<Platform>"
+txt = txt + "<x>170</x>";
+txt = txt + "<y>315</y>";
+txt = txt + "</Platform>"
+txt = txt + "</level1>";
+}
+        </textarea>
+            </p>
+
+        <h1>A very quick platform class</h1>
+            <p>
+            <textarea readonly id="platform class part 1" name="platformClassPart1">function Platform(posX,posY)
+{
+    this.Sprite = new Image();
+    this.Sprite.src = "textures/plat1.png"
+    this.SpriteWidth = 40;
+    this.SpriteHeight = 8;
+    this.x = posX;
+    this.y = posY;
+}
+Platform.prototype.update = function()
+{
+}
+Platform.prototype.draw = function()
+{
+    game.ctx.drawImage(this.Sprite, this.x, this.y,this.SpriteWidth *2,this.SpriteHeight *2);
+}
+</textarea>
+            </p>
+            <p>This class just loads an image to use as it's texture.</p>
+            <p>An 'x' and 'y' coordinate is passed in when the platform is created.</p>
+            <p>It then draws itself at it's 'x' and 'y' coordinate.</p>
+
+
+        <h1>The loading of said XML string</h1>
+        	<p>
+    		<textarea readonly id="loading xml part 1" name="loadingXmlPart1">
+for (var i = 0; i < game.numPlatforms; i++) {
+    var x;
+    var y;
+
+    if (window.DOMParser) {
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(txt, "text/xml");
+        x = xmlDoc.getElementsByTagName("x")[i].childNodes[0].nodeValue;
+        y = xmlDoc.getElementsByTagName("y")[i].childNodes[0].nodeValue;
+        game.platforms[game.platforms.length] = new Platform(x, y);
+    }
+    else // Internet Explorer
+    {
+        xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+        xmlDoc.async = false;
+        xmlDoc.loadXML(txt);
+        console.log(txt.length);
+    }
+
+}
+</textarea>
+    		</p>
+    		<p>The for loop will allow us to go through each section of the XML string</p>
+            <p>It will loop through the number of platforms we specify.</p>
+            <p>(Make sure this number matches the number of platform tags you have.)</p>
+            <p>We then create a DOMParser which allows us to parse the XML string.</p>
+            <p>xmlDoc.getElementsByTagName("x")[i] means we get the current node with the value of x.</p>
+            <p>We then get the value of this nodes child node: xmlDoc.getElementsByTagName("x")[i].childNodes[0].nodeValue;</p>
+            <p>We then store this value. We do the same for y.</p>
+            <p>Using these we then create a new platform and add it to a list of platforms.</p>
+            <p>This works in firefox and chrome but internet explorer requires a different method</p>
+            <p>which I will not be covering it in this tutorial.</p>
+
+
+            <p>Here is what we have so far.</p>
+    		<p>
+    		  <img src="htmlImages/ExamplePlatformsLoadingHtml.PNG" alt="2 platforms drawing after their positions were loaded from xml" style="width:608px;height:432px">
+    		</p>
+    		
+
+
+
+        <h1>Creating the startings of a level</h1>
+        <p>Now we will add some more XML code so that we can begin to have a level.</p>
+        <p>We just add some more platform tags like we did before. Make sure to increase the number of platforms!</p>
+		<p>If we do not increase the number of platforms we will not see any of the new ones as they will not be drawn.</p>
+        <p>We are going to have 5 platforms.</p>
+        <p>Our XML string now looks like this</p>
+        	 <p>
+    		<textarea readonly id="creating a level part 1" name="creatingALevelPart1">   txt = "<level1>";
+
+    txt = txt + "<Platform>"
+    txt = txt + "<x>80</x>";
+    txt = txt + "<y>315</y>";
+    txt = txt + "</Platform>"
+
+    txt = txt + "<Platform>"
+    txt = txt + "<x>170</x>";
+    txt = txt + "<y>315</y>";
+    txt = txt + "</Platform>"
+
+    txt = txt + "<Platform>"
+    txt = txt + "<x>290</x>";
+    txt = txt + "<y>270</y>";
+    txt = txt + "</Platform>"
+
+    txt = txt + "<Platform>"
+    txt = txt + "<x>400</x>";
+    txt = txt + "<y>220</y>";
+    txt = txt + "</Platform>"
+
+    txt = txt + "<Platform>"
+    txt = txt + "<x>550</x>";
+    txt = txt + "<y>315</y>";
+    txt = txt + "</Platform>"
+
+    txt = txt + "</level1>";</textarea>
+    		</p>
+    		<p>Our level itself now looks like this</p>
+            <p>
+                <img src="htmlImages/ExampleLevelLoadedHtml.PNG" alt="2 platforms drawing after their positions were loaded from xml" style="width:714px;height:417px">
+            </p>
+
+
+
+
+
+
+        <h1>Using an external XML file instead</h1>
+        <p>We can also use an external XML file to load our level.</p>
+        <p>This is actually a cleaner way of doing it.</p>
+        <p>We just need to copy our XML from above into a separate file and save it with an xml extension.</p>
+        <p>We then need a method to load from an xml file which is called by loadLevelFromExternal()</p>
+        <textarea readonly id="external 1" name="external 1">//for loading from an external xml file
+//source: http://www.w3schools.com/dom/dom_loadxmldoc.asp
+function loadXMLDoc(filename)
+{
+    if (window.XMLHttpRequest)
+      {
+      xhttp=new XMLHttpRequest();
+      }
+    else // code for IE5 and IE6
+      {
+      xhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+    xhttp.open("GET",filename,false);
+    xhttp.send();
+    return xhttp.responseXML;
+} </textarea>
+        <p>We then write our loadLevelFromExternal method like this:</p>
+
+
+        <textarea readonly id="external 2" name="external 2">//loads from external xml file
+function loadLevelFromExternal()
+{
+    xmlDoc=loadXMLDoc("Level1.xml");
+    for (var i = 0; i < game.numPlatforms; i++) {
+        var x;
+        var y;
+
+        x = xmlDoc.getElementsByTagName("x")[i].childNodes[0].nodeValue;
+        y = xmlDoc.getElementsByTagName("y")[i].childNodes[0].nodeValue;
+
+        game.platforms[game.platforms.length] = new Platform(x, y);
+    }
+}</textarea>
+
+    <p>This is pretty much identical to the code for loading from inline xml except that we do not need to create a DOMParser</p>
+    <p>We just loop through each x and y tag and create a platform using the values found at each</p>
+
+
+        <h1>Link to a minimal example I made earlier</h1>
+            <ul>
+                <li>Here is a link to a <a href="htmlExampleProgram/Example.html">minimal example I made earlier</a>
+            </ul>
+
+        <h1>Sources</h1>
+		<ul>
+    		<li>Source 1: <a href="http://www.w3schools.com/dom/dom_loadxmldoc.asp">http://www.w3schools.com/dom/dom_loadxmldoc.asp</a>
+    		<li>Source 2: <a href="http://www.w3schools.com/dom/dom_methods.asp">http://www.w3schools.com/dom/dom_methods.asp</a>
+		</ul>
+
+        <h1>Download the the code here</h1>
+            <ul>
+                <li><a href="https://github.com/Redbeard2794/Loading-a-level-from-XML-in-HTML5-Tutorial-Code.git">https://github.com/Redbeard2794/Loading-a-level-from-XML-in-HTML5-Tutorial-Code.git</a>
+            </ul>
+
+
+    </body>
+
+</html>

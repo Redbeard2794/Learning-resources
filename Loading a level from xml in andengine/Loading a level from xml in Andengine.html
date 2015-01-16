@@ -1,0 +1,343 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<meta charset="utf-8"> 
+    <head>
+        <title>Loading a level from xml in Andengine</title>
+         <link rel="stylesheet" type="text/css" href="css files/LearningResource.css">
+    </head>
+
+    <body>
+        <h2>Loading a level from an xml file in Andengine</h2>
+
+        <h1>Overview</h1>
+        <p>Welcome to my learning resource for loading a level from xml in Andengine.</p>
+        	<p>This is a very useful idea as it means you no longer have to hand place every single object in your Andengine game.</p>
+        	<p>You can just write an xml file that contains the positions of the objects/sprites you want to place and load it.</p>
+        	<p>You then give objects the positions from the xml file when you create them and there you go, instant level!</p>
+        	<p>I will guide you through writing a simple xml file which will be used to position a few platforms for a simple platformer game</p>
+        	<p>I will also guide you through loading the file and using it to position the objects</p>
+
+        	<H4> The steps</H4>
+        	<ul>
+    			<li>Step 1.) Create an XML file
+    			<li>Step 2.) Load the XML file
+    			<li>Step 3.) Positioning objects with the XML file
+			</ul>
+
+
+
+        <h1>The XML file</h1>
+        <p>First we create an xml file, like so.</p>
+    		<p>
+    		<textarea readonly id="xml part 1" name="xmlPart1"><?xml version="1.0" encoding="utf-8"?>
+<level width="720" height="480">
+<entity x="40" y="315" width="100" height="50" type="platform"/>
+<entity x="210" y="315" width="100" height="50" type="platform"/>
+</level></textarea>
+    		</p>
+            <p>Save it with a .lvl extension.</p>
+            <p>We are defining a width and height for the level which can also be useful.</p>
+            <p>I won't actually be using it in this tutorial though.</p>
+            <p>We then define a platform, which is indicated by type="platform".</p>
+            <p>We then define x and coordinates and also values for width and height.</p>
+            <p>This makes your platforms very flexible and allows many variations so that we can make interesting levels.</p>
+
+    		<p>We then need to create a 'level' folder inside our 'assets' folder:</p>
+            <p>
+                <img src="androidImages/AssetsHierarchy.PNG" alt="shows how the assets folder should be" style="width:211px;height:100px">
+            </p>
+            <p>Your assets folder should look like the one in the image above.</p>
+
+        <h1>A very quick platform class</h1>
+            <p>
+            <textarea readonly id="platform class part 1" name="platformClassPart1">package ie.itcarlow.loadlevelfromxmlexample;
+//import statements
+import org.andengine.engine.Engine;
+import org.andengine.entity.scene.Scene;
+import org.andengine.entity.sprite.Sprite;
+import org.andengine.opengl.texture.TextureManager;
+import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
+import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
+import org.andengine.opengl.texture.region.ITextureRegion;
+
+import android.content.Context;
+
+public class Platform {
+//variables
+private final float platformX;
+private final float platformY;
+private ITextureRegion platformTextureRegion;
+private Sprite platformSprite;
+private final float w;
+private final float h;</textarea>
+            </p>
+            <p>We will be needing these import statements and also these variables.</p>
+            <p>platformX and platformY are the 'x' and 'y' coordinates for the platform</p>
+            <p>platformTextureRegion is the texture region and platformSprite is the platform's sprite.</p>
+            <p>w and h are the width and height of the platform. </p>
+
+            <p></p>
+
+            <H4>Now for the constructor:</H4>
+
+
+            <p>
+            <textarea readonly id="platform class part 2" name="platformClassPart2">public Platform(Context c, TextureManager t, int x, int y, int width, int height)
+{
+    loadGFX(c, t);
+    platformX = x;
+    platformY = y;
+    w=width;
+    h=height;
+}</textarea>
+            </p>
+            <p>We pass in the Context and a TextureManager along with 'x' and 'y' coordinates and a width and a height</p>
+            <p>We pass the context and textureManager to loadGFX so that we can load the texture</p>
+
+
+            <H4>loadGFX</H4>
+            <p>
+            <textarea readonly id="platform class part 3" name="platformClassPart3">private void loadGFX(Context c, TextureManager t)
+{
+    BitmapTextureAtlas platformTexture = new BitmapTextureAtlas(t, 120, 60);
+    platformTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(platformTexture,
+    c.getAssets(), "plat2.png",0,0);
+    platformTexture.load();
+}</textarea>
+            </p>
+            <p>We create a texture for the platforms sprite to use and set up the texture region.</p>
+            <p>We then load the texture.</p>
+
+
+            <H4>Populate</H4>
+            <p>
+            <textarea readonly id="platform class part 4" name="platformClassPart4">public void Populate(Engine c, Scene s)
+{
+    platformSprite = new Sprite(platformX, platformY, w, h, platformTextureRegion,
+    c.getVertexBufferObjectManager());
+    s.attachChild(platformSprite);
+}</textarea>
+            </p>
+            <p>This method is very like our onPopulateScene in main and carries out the same functions.</p>
+            <p>It is called in main for each platform.</p>
+            <p>We pass in the engine and the scene from main.</p>
+            <p>We then initialise the platforms sprite with its position, dimensions, textureRegion and the VertexBufferObjectManager.</p>
+            <p>Finally we attach it to the scene.</p>
+
+            <H4>Update</H4>
+            <p>
+            <textarea readonly id="platform class part 5" name="platformClassPart5">public void Update()
+{
+}</textarea>
+            </p>
+            <p>This method is blank for this tutorial but you could do something to update the platforms here if you wish</p>
+
+            <H4>Gets and Sets</H4>
+            <p>
+            <textarea readonly id="platform class part 6" name="platformClassPart6">public Sprite getSprite(){return platformSprite;}
+public void setSprite(Sprite sp){platformSprite = sp;}</textarea>
+            </p>
+            <p>These are just here so that we can access each platforms sprite outside the class which will be important later on.</p>
+
+
+
+            <h1>Now to load our level from XML</h1>
+
+
+<H4>Declare our XML tags</H4>
+
+            <textarea readonly id="loading xml part 1" name="loadingXmlPart1">   private static final String TAG_ENTITY = "entity";
+    private static final String TAG_ENTITY_ATTRIBUTE_X = "x";
+    private static final String TAG_ENTITY_ATTRIBUTE_Y = "y";
+    private static final String TAG_ENTITY_ATTRIBUTE_WIDTH = "width";
+    private static final String TAG_ENTITY_ATTRIBUTE_HEIGHT = "height";
+    private static final String TAG_ENTITY_ATTRIBUTE_TYPE = "type";
+    private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM = "platform";</textarea>
+
+
+            <p>We begin by declaring our xml tags as variables.</p>
+            <p>TAG_ENTITY = "entity" means that when we come across an entity tag in our xml we are dealing with an object.</p>
+            <p>TAG_ENTITY_ATTRIBUTE_X = "x" means that wherever there is an 'x' tag we will get our 'x' coordinate here.</p>
+            <p>Likewise, for TAG_ENTITY_ATTRIBUTE_Y = "y" we will find our 'y' coordinate when we find a 'y' tag.</p>
+            <p>TAG_ENTITY_ATTRIBUTE_WIDTH = "width" gives us our width and TAG_ENTITY_ATTRIBUTE_HEIGHT = "height" gives us our height.</p>
+            <p>The TAG_ENTITY_ATTRIBUTE_TYPE = "type" tells us that we are going to find out what type of entity the previous tags have been describing.</p>
+            <p>Finally TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM = "platform" tells us that this object is of type platform.</p>
+            <p>If you want to position other objects with our XML file then you just need to add new types, such as:</p>
+            <p>private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_TRAP = "trap"</p>
+
+            <H4>Some other stuff we will need</H4>
+
+            <textarea readonly id="loading xml part 2" name="loadingXmlPart2">  private static final int CAMERA_WIDTH = 720;
+    private static final int CAMERA_HEIGHT = 480;   
+    private Scene mScene;
+    private Vector<Platform> listOfPlatforms = new Vector<Platform>();
+    SmoothCamera mSmoothCamera;
+    private final Context c = this;</textarea>
+
+            <p>CAMERA_WIDTH and CAMERA_HEIGHT are used to set up our camera for the game. Essentially it is the bounds of the screen.</p>
+            <p>mScene is our scene.</p>
+            <p>Next we have a vector which will be used to store all our platforms for the level.</p>
+            <p>We also have our cameraa. I am using a smooth camera as it will allow side scrolling for a platformer game.</p>
+            <p>Finally we have another Context which will allow us to pass it into the platform class.</p>
+
+            <H4>Now to set up our engine</H4>
+
+            <textarea readonly id="loading xml part 3" name="loadingXmlPart3">  @Override
+    public EngineOptions onCreateEngineOptions() {
+        // TODO Auto-generated method stub
+        mSmoothCamera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT,100, 0, 1.0f);
+        EngineOptions engine = new EngineOptions(true, ScreenOrientation.LANDSCAPE_SENSOR,
+                new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT),mSmoothCamera);
+         return engine;
+    }</textarea>
+            <p>OK, first we set up our smooth camera using our CAMERA_WIDTH and CAMERA_HEIGHT.</p>
+            <p>We then set up our engine options so that it will use our smooth camera and also set up our game to run in landscape mode.</p>
+            <p>Finally, we return these engine options.</p>
+
+            <H4>In our onCreateScene method</H4>
+            <p>For the next few parts we will be working in our onCreateScene method.</p>
+            <textarea readonly id="loading xml part 4" name="loadingXmlPart4">      this.mScene = new Scene();
+        
+        final LevelLoader levelLoader = new LevelLoader();
+        levelLoader.setAssetBasePath("level/");</textarea>
+            <p>We start by initialising our scene.</p>
+            <p>We then create a level loader object and set it's asset base path to be our level folder.</p>
+
+            <H4>Working with our level loader object</H4>
+
+            <textarea readonly id="loading xml part 5" name="loadingXmlPart5">      levelLoader.registerEntityLoader(LevelConstants.TAG_LEVEL,
+        new IEntityLoader()
+            {
+                 @Override
+                public IEntity onLoadEntity(final String pEntityName,
+                final Attributes pAttributes)
+                {
+                    final int width = SAXUtils.getIntAttributeOrThrow(pAttributes,
+                            LevelConstants.TAG_LEVEL_ATTRIBUTE_WIDTH);
+                    final int height = SAXUtils.getIntAttributeOrThrow(pAttributes,
+                            LevelConstants.TAG_LEVEL_ATTRIBUTE_HEIGHT);
+                    Main.this.runOnUiThread(new Runnable()
+                    {
+                    @Override
+                    public void run()
+                    {
+                        Toast.makeText(Main.this,
+                        "Loaded level with a width of "+width + "and a height of "+height,
+                        Toast.LENGTH_LONG).show();
+                    }
+                    });
+                        return Main.this.mScene;
+                    }
+                });</textarea>
+            <p>This is also in our onCreateSceneMethod.</p>
+            <p>We register an EntityLoader that will load when it finds a level tag.</p>
+            <p>It then finds the levels width and height tags and then stores the width and height of the level. I do not use these in this tutorial but they are nice to have.</p>
+            <p>I then use a toast to display a quick message that tells you the dimensions of the level and then return the scene.</p>
+
+
+
+            <textarea readonly id="loading xml part 6" name="loadingXmlPart6">levelLoader.registerEntityLoader(TAG_ENTITY, new IEntityLoader()
+                {
+
+                @Override
+                public IEntity onLoadEntity(String pEntityName,
+                        Attributes pAttributes) {
+                        // TODO Auto-generated method stub
+                        final int x = SAXUtils.getIntAttributeOrThrow(pAttributes,TAG_ENTITY_ATTRIBUTE_X);
+                        final int y = SAXUtils.getIntAttributeOrThrow(pAttributes,TAG_ENTITY_ATTRIBUTE_Y);
+                        final int width = SAXUtils.getIntAttributeOrThrow(pAttributes,TAG_ENTITY_ATTRIBUTE_WIDTH);
+                        final int height = SAXUtils.getIntAttributeOrThrow(pAttributes,TAG_ENTITY_ATTRIBUTE_HEIGHT);
+                        final String type = SAXUtils.getAttributeOrThrow(pAttributes,TAG_ENTITY_ATTRIBUTE_TYPE);
+                        final Platform spr;
+
+
+                        if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM))
+                        {
+                            spr = new Platform(c, getTextureManager(), x, y, width,height);
+                            listOfPlatforms.add(spr);
+                            return spr.getSprite();
+                        } 
+                        else
+                        {
+                            return null;
+                        }
+                }
+                });</textarea>
+            <p>We are still in our onCreateScene.</p>
+            <p>In this section we are looking for entities(This is why we have an entity tag).</p>
+            <p>When we get an entity we then look for 'x', 'y', 'width' and 'height' tags and store their values.</p>
+            <p>We then look for a 'type' tag and store it. We will use this to decide which object we need to create.</p>
+            <p>We then declare a platform object but we do nothing with it yet.</p>
+            <p>We now check to see what type of object we have come across.</p>
+            <p>For now we only check if the type is TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM, i.e. is it a platform?</p>
+            <p>If it is we initialise our platform object, add it to the vector of platforms and then return it's sprite.</p>
+            <p>If it is not a platform we return null.</p>
+
+            <textarea readonly id="loading xml part 7" name="loadingXmlPart7">levelLoader.loadLevelFromAsset(this.getAssets(), "level1.lvl");
+populatePlatforms();
+
+                pOnCreateSceneCallback.onCreateSceneFinished(this.mScene);</textarea>
+            <p>Now we tell our levelLoader to load our level1.lvl file.</p>
+            <p>We then call our populatePlatforms method and then finish creating the scene.</p>
+
+            <H4>Let's populate some platforms!</H4>
+                        <textarea readonly id="populate part 1" name="populatePart1">public void populatePlatforms()
+    {
+        int size = listOfPlatforms.size();
+        for (int i = 0; i < size; i++)
+        {
+            listOfPlatforms.get(i).Populate(this.mEngine, mScene);
+        }
+    }</textarea>
+            <p>This is a very simple little method. It hets the number of platforms and then calls each platforms populate method.</p>
+            <p>The engine and the scene are passed in.</p>
+
+
+
+
+
+
+            <h1>What we have so far:</h1>
+    		<p>
+    		  <img src="androidImages/android image 1.PNG" alt="2 platforms drawing after their positions were loaded from xml" style="width:828px;height:554px">
+    		</p>
+    		
+
+
+
+        <h1>Creating the startings of a level</h1>
+        <p>Now we will add some more XML code so that we can begin to have a level.</p>
+        <p>We just add some more entities with their type set as platform like we did before.</p>
+        <p>We are going to have 5 platforms.</p>
+        <p>Our XML file now looks like this:</p>
+        	 <p>
+    		<textarea readonly id="creating a level part 1" name="creatingALevelPart1"><?xml version="1.0" encoding="utf-8"?>
+<level width="720" height="480">
+<entity x="40" y="315" width="100" height="50" type="platform"/>
+<entity x="210" y="315" width="100" height="50" type="platform"/>
+<entity x="340" y="240" width="100" height="50" type="platform"/>
+<entity x="470" y="180" width="100" height="50" type="platform"/>
+<entity x="600" y="315" width="100" height="50" type="platform"/>
+</level></textarea>
+    		</p>
+    		<p>Our level itself now looks like this</p>
+            <p>
+                <img src="androidImages/android image 2.PNG" alt="2 platforms drawing after their positions were loaded from xml" style="width:827px;height:548px">
+            </p>
+
+
+
+        <h1>Link to a minimal example I made earlier</h1>
+            <ul>
+                <li>Here is a link to a <a href="https://github.com/Redbeard2794/Loading-a-level-from-xml-in-Andengine-tutorial-code.git">minimal example I made earlier</a>
+				<li>It is on Github so feel free to take a copy of it and try it out for yourself.
+            </ul>
+
+        <h1>Sources</h1>
+		<ul>
+    		<li>Source 1: <a href="https://github.com/nicolasgramlich/AndEngineExamples/blob/GLES2/src/org/andengine/examples/LevelLoaderExample.java">https://github.com/nicolasgramlich/AndEngineExamples/blob/GLES2/src/org/andengine/examples/LevelLoaderExample.java</a>
+		</ul>
+
+    </body>
+
+</html>
